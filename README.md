@@ -1,4 +1,4 @@
-# cybel
+# cybele
 
 "Download the whole internet if you can.." - **contributors** 
 
