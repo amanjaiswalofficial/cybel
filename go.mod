@@ -1,4 +1,4 @@
-module github.com/amanjaiswalofficial/cybele
+module cybele
 
 go 1.15
 
