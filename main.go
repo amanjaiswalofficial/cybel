@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cybele/cmd"
+	"cybele/ops/cmd"
 )
 
 func main() {
