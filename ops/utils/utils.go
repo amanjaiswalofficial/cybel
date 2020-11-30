@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
+	"log"
+	"strings"
 )
 
 // ReadFileFromPath takes input as a path to read file from
@@ -19,6 +20,13 @@ func ReadFileFromPath(path string) ([]byte, error) {
 // HandleError is used to ensure single place to handle all errors
 // After displaying the message, exits the program
 func HandleError(err string) {
-	fmt.Println(err)
+	LogMessage(err)
 	os.Exit(1)
+}
+
+// LogMessage is used to log messages to the console
+func LogMessage(messages ...string) {
+	if os.Getenv("LOGGING") == "true" {
+		log.Println(strings.Join(messages, " "))
+	}
 }

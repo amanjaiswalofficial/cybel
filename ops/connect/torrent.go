@@ -7,17 +7,16 @@ import (
 
 // TorrentData : A struct for getting the json data
 type TorrentData struct {
-	Name string `json:"name"`
-	Filename string `json:"filename"`
-	Comment string `json:"comment"`
-	Date string `json:"data"`
-	CreatedBy string `json:"created_by"`
-	InfoHash string `json:"info_hash"`
-	Size string `json:"size"`
-	Announce string `json:"announce"`
+	Name         string   `json:"name"`
+	Filename     string   `json:"filename"`
+	Comment      string   `json:"comment"`
+	Date         string   `json:"data"`
+	CreatedBy    string   `json:"created_by"`
+	InfoHash     string   `json:"info_hash"`
+	Size         string   `json:"size"`
+	Announce     string   `json:"announce"`
 	AnnounceList []string `json:"announce_list"`
-	Files []string `json:"files"`
-
+	Files        []string `json:"files"`
 }
 
 // Print properties from the torrent file
@@ -36,7 +35,7 @@ func (td TorrentData) printInfo() {
 // ReadJSONFromByteSlice accepts a byteslice
 // Tries to convert it into a json format
 // returns: json of type TorrentData
-func ReadJSONFromByteSlice(data []byte) (TorrentData) {
+func ReadJSONFromByteSlice(data []byte) TorrentData {
 	var td TorrentData
 	json.Unmarshal(data, &td)
 	return td
