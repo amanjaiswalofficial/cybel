@@ -2,8 +2,10 @@ package utils
 
 import (
 	"io/ioutil"
-	"os"
 	"log"
+	"net/url"
+	"os"
+	"strconv"
 	"strings"
 )
 
@@ -29,4 +31,30 @@ func LogMessage(messages ...string) {
 	if os.Getenv("LOGGING") == "true" {
 		log.Println(strings.Join(messages, " "))
 	}
+}
+
+// MakeInfoHash takes input as the hash from the torrentData
+// And converts into a format Tracker can understand
+// returns: hash in hex format
+func MakeInfoHash(basicHash string) string {
+	var resultHash string
+
+	var convertedHashArray []string
+	// Ex - basicHash = "5149527e0e68e9f9a7f104b7b35dd1ea0f04b4bd"
+	totalLen := len(basicHash)
+	for i := 0; i < totalLen; i += 2 {
+		val, _ := strconv.ParseInt(string(basicHash[i:i+2]), 16, 16)
+		var res string
+		if val < 127 {
+			res = url.PathEscape(string(val))
+			if string(res[0]) == "%" {
+				res = "%" + strings.ToLower(res[1:])
+			}
+		} else {
+			res = "%" + string(basicHash[i:i+2])
+		}
+		convertedHashArray = append(convertedHashArray, res)
+	}
+	resultHash = strings.Join(convertedHashArray, "")
+	return resultHash
 }
