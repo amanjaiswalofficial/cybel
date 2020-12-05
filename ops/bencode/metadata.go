@@ -1,9 +1,6 @@
 package bencode
 
 import (
-	"encoding/json"
-	"errors"
-	"os"
 	"path/filepath"
 	"time"
 )
@@ -93,24 +90,4 @@ func Unpack(data map[string]interface{}) *MetaInfo {
 	infoDict.Files = fPieces
 	meta.Info = infoDict
 	return meta
-}
-
-// Cache the torrent file on disk in json format, avoiding the overhead of re-decoding the file everytime
-// we add the torrent file to the download queue (This situation only happens if we want to re-download the torrent).
-func CacheFile(metadata *MetaInfo) error {
-	data, err := json.MarshalIndent(metadata, "", " ")
-
-	f, err := os.Create(metadata.Info.Name + ".json")
-	if err != nil {
-		return nil
-	}
-
-	n, err := f.Write(data)
-	if err != nil {
-		return err
-	} else if n != len(data) {
-		return errors.New("Write failed")
-	}
-
-	return nil
 }

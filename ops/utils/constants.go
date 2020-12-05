@@ -3,6 +3,8 @@ package utils
 const (
 	// ErrorReadingJSON is displayed on failure
 	ErrorReadingJSON = "Error Reading JSON from path"
+	// ErrorMarshaling is used when unable to marshal torrent data to json
+	ErrorMarshaling = "Error Marshaling data to JSON"
 	// ConnectionPort is used as url params for tracker request
 	ConnectionPort = 6889
 	// ErrorParsingAnnounceURL is used when unable to parse url

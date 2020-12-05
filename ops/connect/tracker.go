@@ -1,11 +1,11 @@
 package connect
 
 import (
+	"errors"
 	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
-	"errors"
 
 	"cybele/ops/bencode"
 	"cybele/ops/utils"
@@ -47,7 +47,6 @@ func (tr trackerRequest) addParamsToTrackerRequest(td TorrentData) {
 	tr.url.RawQuery = tr.url.RawQuery + "&info_hash=" + infoHash
 }
 
-
 // decodeResponse() is used to decode values from response received from tracker
 // it uses bencoding to convert values into human readable format
 // returns: trackerRequest struct with updated values for decodedResp
@@ -64,47 +63,47 @@ func (tr *trackerRequest) decodeResponse() (err error) {
 	for key, val := range decodedResponse {
 		switch val.(type) {
 
-			case int64:
-				/*
-					For each of the key with int64 type
-					Find the respective struct variable (using FieldByName)
-					Then by using SetInt(), set value for the same in tr.decodedResp
-				*/
-				rresp := reflect.ValueOf(&tr.decodedResp)
-				resStruct := rresp.Elem()
-				formattedKey := utils.FormatKey(key)
-				targetField := resStruct.FieldByName(strings.Title(formattedKey))
-				targetField.SetInt(val.(int64))
+		case int64:
+			/*
+				For each of the key with int64 type
+				Find the respective struct variable (using FieldByName)
+				Then by using SetInt(), set value for the same in tr.decodedResp
+			*/
+			rresp := reflect.ValueOf(&tr.decodedResp)
+			resStruct := rresp.Elem()
+			formattedKey := utils.FormatKey(key)
+			targetField := resStruct.FieldByName(strings.Title(formattedKey))
+			targetField.SetInt(val.(int64))
 
-			case []interface{}:
-				fetchedValues := val.([]interface{})
-				for _, values := range fetchedValues {
-					assertedFetchedVal := values.(map[string]interface{})
-					for key, fetchedVal := range assertedFetchedVal {
+		case []interface{}:
+			fetchedValues := val.([]interface{})
+			for _, values := range fetchedValues {
+				assertedFetchedVal := values.(map[string]interface{})
+				for key, fetchedVal := range assertedFetchedVal {
 
-						/*
-							For each of the key in the peers response from tracker
-							i.e. Ip, Port and PeerId
-							Dynamically, find FieldByName
-							And update the same in tr.decodedResp.peers by appending
-							each peerObject
-						*/
-						var p peerObject
+					/*
+						For each of the key in the peers response from tracker
+						i.e. Ip, Port and PeerId
+						Dynamically, find FieldByName
+						And update the same in tr.decodedResp.peers by appending
+						each peerObject
+					*/
+					var p peerObject
 
-						rresp := reflect.ValueOf(&p)
-						resStruct := rresp.Elem()
-						formattedKey := utils.FormatKey(key)
-						targetField :=
+					rresp := reflect.ValueOf(&p)
+					resStruct := rresp.Elem()
+					formattedKey := utils.FormatKey(key)
+					targetField :=
 						resStruct.FieldByName(strings.Title(formattedKey))
-						targetField.SetString(fetchedVal.(string))
+					targetField.SetString(fetchedVal.(string))
 
-						tr.decodedResp.peers =
-							append(tr.decodedResp.peers, p)
-					}
+					tr.decodedResp.peers =
+						append(tr.decodedResp.peers, p)
 				}
-			default:
-				return errors.New(utils.UnknownDecodeKeysEncountered)
 			}
+		default:
+			return errors.New(utils.UnknownDecodeKeysEncountered)
+		}
 	}
 	return nil
 }

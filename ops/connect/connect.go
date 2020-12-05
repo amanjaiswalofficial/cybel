@@ -1,12 +1,11 @@
 package connect
 
 import (
+	"cybele/ops/utils"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-
-	"cybele/ops/utils"
 )
 
 // FetchDetailsFromTorrent is used to read json from a file
