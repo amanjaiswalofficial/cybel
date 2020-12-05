@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -101,4 +102,39 @@ func ComputeInfoHash(path string) string {
 
 	binaryHash := sha1.Sum(newBuf.Bytes())
 	return hex.EncodeToString(binaryHash[:])
+}
+
+// AddTo cache takes input as the torrent filename,
+// the torrent file data (in its byte form) and write
+// it to the cache directory (and to the download queue
+// as well). returns: an error if any.
+func AddToCache(filename string, data []byte) error {
+	// Check if the cache directory exists, if not, create it
+	if _, err := os.Stat(CybeleCachePath); os.IsNotExist(err) {
+		// Create the directory (and its parents) with unix permission bits
+		err = os.MkdirAll(CybeleCachePath, 0777)
+		if err != nil {
+			return err
+		}
+	}
+	fpath := filepath.Join(CybeleCachePath, filename)
+	f, err := os.Create(fpath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	f.Write(data)
+
+	// Create the download queue file.
+	queuePath := filepath.Join(CybeleCachePath, "queue")
+	queueFile, err := os.Create(queuePath)
+
+	if err != nil {
+		return err
+	}
+	defer queueFile.Close()
+
+	queueFile.Write([]byte(filename + "\n"))
+	return nil
 }

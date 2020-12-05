@@ -90,12 +90,10 @@ func WriteJSON(path string) error {
 		return errors.New(utils.ErrorMarshaling)
 	}
 
-	newf, err := os.Create(td.Filename)
+	err = utils.AddToCache(td.Filename, rawBytes)
 	if err != nil {
 		return err
 	}
-	defer newf.Close()
-	newf.Write(rawBytes)
 
 	return nil
 }

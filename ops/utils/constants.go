@@ -1,5 +1,10 @@
 package utils
 
+import (
+	"os"
+	"strings"
+)
+
 const (
 	// ErrorReadingJSON is displayed on failure
 	ErrorReadingJSON = "Error Reading JSON from path"
@@ -16,3 +21,7 @@ const (
 	// UnknownDecodeKeysEncountered is used when keys from tracker response couldn't be handled
 	UnknownDecodeKeysEncountered = "Error encountered while decoding keys from tracker response"
 )
+
+// CybeleCachePath is where all json files will reside
+// as well as the files that are in the download queue.
+var CybeleCachePath = strings.Join([]string{os.Getenv("HOME"), ".cache", "cybele"}, "/")
