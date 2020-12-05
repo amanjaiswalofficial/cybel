@@ -58,3 +58,17 @@ func MakeInfoHash(basicHash string) string {
 	resultHash = strings.Join(convertedHashArray, "")
 	return resultHash
 }
+
+// FormatKey is used to properly format strings to expected struture
+// Ex: Takes max interval and returns maxInterval
+// returns: formatted value for a string
+func FormatKey(key string) (string) {
+	keySplit := strings.Split(key, " ")	
+	if len(keySplit) > 1 {
+		for i := 1 ; i < len(keySplit) ; i++ {
+			keySplit[i] = strings.Title(keySplit[i])
+		}
+
+	}
+	return strings.Join(keySplit, "")
+}
