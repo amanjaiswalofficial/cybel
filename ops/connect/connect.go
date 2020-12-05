@@ -5,18 +5,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
-	"strings"
 
 	"cybele/ops/utils"
-	"cybele/ops/bencode"
 )
-
-// Object to store tracker related information
-type trackerRequest struct {
-	url      *url.URL
-	respBody *string
-}
 
 // FetchDetailsFromTorrent is used to read json from a file
 // Then fetch the list of peers by making an HTTP request
@@ -38,25 +29,25 @@ func FetchDetailsFromTorrent(path string) {
 
 // Connect to tracker and retrieve list of peers
 func connectToTracker(td TorrentData) {
+	tr := makeRequestObject(td)
 
-	tReqObj := makeRequestObject(td)
-	resp, err := getResponse(tReqObj)
+	resp, err := getResponse(tr)
 
 	if err != nil {
 		utils.HandleError(utils.ErrorConnectingToTracker)
 	}
 
-	tReqObj.respBody = &resp // Using address, as defer deletes the original value
-	trackerResponse := strings.NewReader(*tReqObj.respBody)
-	decodedResponse, errs := bencode.Decode(trackerResponse)
-	if errs != nil {
-		utils.LogMessage(errs.Error())
+	tr.response = &resp // Using address, as defer deletes the original value
+	trPtr := &tr
+
+	// Decoding the response for further use
+	dErr := trPtr.decodeResponse()
+	if dErr != nil {
+		utils.HandleError(utils.ErrorDecodingResponse)
 	}
 
-	// TO UPDATE
-	fmt.Print(decodedResponse)
-
-
+	// TODO: Update here
+	fmt.Println(tr.decodedResp)
 }
 
 // Make request object of type trackerRequest from TorrentData
@@ -70,24 +61,6 @@ func makeRequestObject(td TorrentData) trackerRequest {
 	tr.addParamsToTrackerRequest(td)
 	return tr
 
-}
-
-// Add required params to the url to request to tracker
-func (tr trackerRequest) addParamsToTrackerRequest(td TorrentData) {
-
-	infoHash := utils.MakeInfoHash(td.InfoHash)
-	params := url.Values{
-		"peer_id":    []string{string("-AA1111-123456789012")}, // to change
-		"port":       []string{strconv.Itoa(int(utils.ConnectionPort))},
-		"uploaded":   []string{"0"},     // by default, for first request
-		"downloaded": []string{"0"},     // by default, for first request
-		"left":       []string{td.Size}, // to confirm
-		//"compact":    []string{"1"},     // by default, for the first request
-	}
-
-	tr.url.RawQuery = params.Encode()
-	// Adding info_hash separately to avoid url-encoding and keeping hex-encode
-	tr.url.RawQuery = tr.url.RawQuery + "&info_hash=" + infoHash
 }
 
 // Get response for the GET request to tracker URL with required params

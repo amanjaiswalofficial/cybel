@@ -9,4 +9,8 @@ const (
 	ErrorParsingAnnounceURL = "Error Parsing the announce URL for torrent"
 	// ErrorConnectingToTracker is used when error connecting to tracker
 	ErrorConnectingToTracker = "Error Connecting to Tracker"
+	// ErrorDecodingResponse is used when response from tracker couldn't be decoded
+	ErrorDecodingResponse = "Error encountered while decoding response from tracker"
+	// UnknownDecodeKeysEncountered is used when keys from tracker response couldn't be handled
+	UnknownDecodeKeysEncountered = "Error encountered while decoding keys from tracker response"
 )
