@@ -1,8 +1,15 @@
 package utils
 
+import (
+	"os"
+	"strings"
+)
+
 const (
 	// ErrorReadingJSON is displayed on failure
 	ErrorReadingJSON = "Error Reading JSON from path"
+	// ErrorMarshaling is used when unable to marshal torrent data to json
+	ErrorMarshaling = "Error Marshaling data to JSON"
 	// ConnectionPort is used as url params for tracker request
 	ConnectionPort = 6889
 	// ErrorParsingAnnounceURL is used when unable to parse url
@@ -14,3 +21,7 @@ const (
 	// UnknownDecodeKeysEncountered is used when keys from tracker response couldn't be handled
 	UnknownDecodeKeysEncountered = "Error encountered while decoding keys from tracker response"
 )
+
+// CybeleCachePath is where all json files will reside
+// as well as the files that are in the download queue.
+var CybeleCachePath = strings.Join([]string{os.Getenv("HOME"), ".cache", "cybele"}, "/")

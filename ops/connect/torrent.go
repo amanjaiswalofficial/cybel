@@ -1,8 +1,13 @@
 package connect
 
 import (
-	"fmt"
+	"cybele/ops/bencode"
+	"cybele/ops/utils"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"os"
+	"strings"
 )
 
 // TorrentData : A struct for getting the json data
@@ -10,7 +15,7 @@ type TorrentData struct {
 	Name         string   `json:"name"`
 	Filename     string   `json:"filename"`
 	Comment      string   `json:"comment"`
-	Date         string   `json:"data"`
+	Date         string   `json:"date"`
 	CreatedBy    string   `json:"created_by"`
 	InfoHash     string   `json:"info_hash"`
 	Size         string   `json:"size"`
@@ -39,6 +44,58 @@ func ReadJSONFromByteSlice(data []byte) TorrentData {
 	var td TorrentData
 	json.Unmarshal(data, &td)
 	return td
+}
+
+// WriteJSON takes a torrent file path,
+// decodes the bencoded data and encode
+// it as json, then writes that json
+// out to a file. returns: an error if any.
+func WriteJSON(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	dec, err := bencode.Decode(f)
+	if err != nil {
+		return err
+	}
+
+	meta := bencode.Unpack(dec)
+	files := make([]string, 0, len(meta.Info.Files))
+
+	for i := 0; i < len(meta.Info.Files); i++ {
+		files = append(files, meta.Info.Files[i].Path)
+	}
+
+	hash := utils.ComputeInfoHash(path)
+	size := fmt.Sprintf("%d", meta.Info.PieceLength)
+
+	td := TorrentData{
+		Name:         meta.Info.Name,
+		Filename:     strings.Join([]string{meta.Info.Name, ".json"}, ""),
+		Date:         meta.CreationDate.String(),
+		Comment:      meta.Comment,
+		CreatedBy:    meta.CreatedBy,
+		InfoHash:     hash,
+		Size:         size,
+		Announce:     meta.Announce,
+		AnnounceList: meta.AnnounceList,
+		Files:        files,
+	}
+
+	rawBytes, err := json.MarshalIndent(td, "", "\t")
+	if err != nil {
+		return errors.New(utils.ErrorMarshaling)
+	}
+
+	err = utils.AddToCache(td.Filename, rawBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // IsEmpty checks if a TorrentData struct is empty
