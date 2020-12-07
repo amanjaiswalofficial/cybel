@@ -128,7 +128,7 @@ func AddToCache(filename string, data []byte) error {
 
 	// Create the download queue file.
 	queuePath := filepath.Join(CybeleCachePath, "queue")
-	queueFile, err := os.Create(queuePath)
+	queueFile, err := os.OpenFile(queuePath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0660)
 
 	if err != nil {
 		return err
