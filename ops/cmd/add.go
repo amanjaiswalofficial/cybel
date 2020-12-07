@@ -5,6 +5,7 @@ import (
 	"cybele/ops/utils"
 	"github.com/spf13/cobra"
 	"os"
+	"path/filepath"
 )
 
 // Register the add command as a subcommand
@@ -26,15 +27,11 @@ func RunAddCmd(cmd *cobra.Command, args []string) {
 		utils.HandleError(err.Error())
 	}
 	// Make sure the provided file is actually a .torrent file
-	for i := len(args[0]) - 1; i >= 0; i-- {
-		if args[0][i] == '.' {
-			if args[0][i:] != ".torrent" {
-				utils.LogMessage("Not a torrent file")
-				os.Exit(1)
-			}
-		}
+	fExtension := filepath.Ext(args[0])
+	if fExtension != ".torrent" {
+		utils.LogMessage("Not a torrent file")
+		os.Exit(1)
 	}
-
 	// Process the file and add it to the download queue
 	err := connect.WriteJSON(args[0])
 	if err != nil {

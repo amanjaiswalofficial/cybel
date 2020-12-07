@@ -38,11 +38,23 @@ func Unpack(data map[string]interface{}) *MetaInfo {
 		unpackedList = append(unpackedList, announceURL[0].(string))
 	}
 
+	// Optional fields (default value if any of the fields doesn't exist)
+
 	// Convert unix timestamp to datetime
-	sec := data["creation date"].(int64)
+	var sec int64
+	var encoding, createdBy string
+	if _, ok := data["creation date"]; ok {
+		sec = data["creation date"].(int64)
+	}
+
 	tm := time.Unix(sec, 0)
-	encoding := data["encoding"].(string)
-	createdBy := data["created by"].(string)
+	if _, ok := data["encoding"]; ok {
+		encoding = data["encoding"].(string)
+	}
+
+	if _, ok := data["created by"]; ok {
+		createdBy = data["created by"].(string)
+	}
 
 	meta := &MetaInfo{
 		Announce:     announce,
@@ -56,7 +68,11 @@ func Unpack(data map[string]interface{}) *MetaInfo {
 	inf := data["info"].(map[string]interface{})
 	pieceLength := inf["piece length"].(int64)
 	pieces := inf["pieces"].(string)
-	private := inf["private"].(int64)
+	// Optional field (default if doesnt exist)
+	var private int64
+	if _, ok := inf["private"]; ok {
+		private = inf["private"].(int64)
+	}
 	name := inf["name"].(string)
 
 	infoDict := &InfoDictionary{
