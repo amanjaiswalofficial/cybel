@@ -30,13 +30,10 @@ type UDPTracker struct {
 }
 
 func New(rawUrl string) *UDPTracker {
-	utils.LogMessage("Raw Url:", rawUrl)
 	u, err := url.Parse(rawUrl)
 	if err != nil {
 		utils.LogMessage(err.Error())
 	}
-
-	utils.LogMessage("Host:", u.Host)
 
 	return &UDPTracker{
 		rawURL:      rawUrl,
@@ -56,7 +53,6 @@ func generateTid() uint32 {
 // the connection ID.
 func (tr *UDPTracker) connect() (net.Conn, uint64) {
 	tr.tid = generateTid()
-	fmt.Println("TID:", tr.tid)
 	// Prepare the udp packet
 	binary.BigEndian.PutUint64(tr.requestBuf[0:], utils.Pid)
 	binary.BigEndian.PutUint32(tr.requestBuf[8:], utils.Connect)
@@ -77,7 +73,7 @@ func (tr *UDPTracker) connect() (net.Conn, uint64) {
 		conn.SetWriteDeadline(time.Now().Add(tr.timeout))
 		nbytes, err := conn.Write(tr.requestBuf)
 		if err != nil {
-			utils.LogMessage(err.Error())
+			utils.HandleError(err.Error())
 		} else if nbytes != len(tr.requestBuf) {
 			utils.HandleError("Must write 16 bytes")
 		}
