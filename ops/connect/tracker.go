@@ -6,13 +6,41 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"cybele/ops/bencode"
 	"cybele/ops/utils"
 )
 
-type peerObject struct {
-	Ip     string // nope, not changing this to IP
+// Tracker represents a udp or http tracker
+// TODO: Implement http tracker with this interface
+type Tracker interface {
+	// Announce connects to (udp or http) tracker
+	Announce(r *AnnounceRequest) (*AnnounceResponse, error)
+}
+
+type AnnounceRequest struct {
+	InfoHash   []byte
+	PeerID     []byte
+	Port       uint16
+	Uploaded   uint64
+	Downloaded uint64
+	Left       uint64
+	Compact    uint8
+	TrackerID  string // This is used for future announcements
+}
+
+type AnnounceResponse struct {
+	Complete    uint32
+	Incomplete  uint32
+	Interval    time.Duration
+	MinInterval time.Duration
+	Peers       []PeerObject
+	TrackerID   string // Returned by the tracker for future announcements
+}
+
+type PeerObject struct {
+	IP     string // nope, not changing this to IP
 	Port   string
 	PeerId string // this neither
 }
@@ -26,7 +54,7 @@ type trackerRequest struct {
 		Incomplete  int64
 		Interval    int64
 		MinInterval int64
-		peers       []peerObject
+		peers       []PeerObject
 	}
 }
 
@@ -88,7 +116,7 @@ func (tr *trackerRequest) decodeResponse() (err error) {
 						And update the same in tr.decodedResp.peers by appending
 						each peerObject
 					*/
-					var p peerObject
+					var p PeerObject
 
 					rresp := reflect.ValueOf(&p)
 					resStruct := rresp.Elem()
