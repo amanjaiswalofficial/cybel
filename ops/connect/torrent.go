@@ -25,7 +25,7 @@ type TorrentData struct {
 }
 
 // Print properties from the torrent file
-func (td TorrentData) printInfo() {
+func (td TorrentData) PrintInfo() {
 	fmt.Printf("name: %+v\n", td.Name)
 	fmt.Printf("filename: %+v\n", td.Filename)
 	fmt.Printf("infoHash: %+v\n", td.InfoHash)

@@ -20,6 +20,13 @@ const (
 	ErrorDecodingResponse = "Error encountered while decoding response from tracker"
 	// UnknownDecodeKeysEncountered is used when keys from tracker response couldn't be handled
 	UnknownDecodeKeysEncountered = "Error encountered while decoding keys from tracker response"
+	// UDPTimeout is used when the number of retransmission surpass the threshold
+	UDPTimeout = "Transmission timed out"
+	// Protocol ID (magic constant used by the udp tracker)
+	Pid = uint64(0x41727101980)
+	// UDP Request Actions
+	Connect  = uint32(0)
+	Announce = uint32(1)
 )
 
 // CybeleCachePath is where all json files will reside
