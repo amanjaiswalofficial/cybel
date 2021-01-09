@@ -14,9 +14,6 @@ import (
 type TorrentData struct {
 	Name         string   `json:"name"`
 	Filename     string   `json:"filename"`
-	Comment      string   `json:"comment"`
-	Date         string   `json:"date"`
-	CreatedBy    string   `json:"created_by"`
 	InfoHash     string   `json:"info_hash"`
 	Size         string   `json:"size"`
 	Announce     string   `json:"announce"`
@@ -75,9 +72,6 @@ func WriteJSON(path string) error {
 	td := TorrentData{
 		Name:         meta.Info.Name,
 		Filename:     strings.Join([]string{meta.Info.Name, ".json"}, ""),
-		Date:         meta.CreationDate.String(),
-		Comment:      meta.Comment,
-		CreatedBy:    meta.CreatedBy,
 		InfoHash:     hash,
 		Size:         size,
 		Announce:     meta.Announce,
