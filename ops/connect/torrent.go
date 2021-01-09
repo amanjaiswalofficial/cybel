@@ -47,16 +47,16 @@ func ReadJSONFromByteSlice(data []byte) TorrentData {
 // decodes the bencoded data and encode
 // it as json, then writes that json
 // out to a file. returns: an error if any.
-func WriteJSON(path string) error {
+func WriteJSON(path string) (*TorrentData, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer f.Close()
 
 	dec, err := bencode.Decode(f)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	meta := bencode.Unpack(dec)
@@ -81,15 +81,15 @@ func WriteJSON(path string) error {
 
 	rawBytes, err := json.MarshalIndent(td, "", "\t")
 	if err != nil {
-		return errors.New(utils.ErrorMarshaling)
+		return nil, errors.New(utils.ErrorMarshaling)
 	}
 
 	err = utils.AddToCache(td.Filename, rawBytes)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &td, nil
 }
 
 // IsEmpty checks if a TorrentData struct is empty

@@ -27,6 +27,8 @@ const (
 	// UDP Request Actions
 	Connect  = uint32(0)
 	Announce = uint32(1)
+	// Max number of peers from response
+	MaxPeers = uint32(10)
 )
 
 // CybeleCachePath is where all json files will reside
