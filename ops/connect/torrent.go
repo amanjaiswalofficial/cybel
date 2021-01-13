@@ -14,9 +14,6 @@ import (
 type TorrentData struct {
 	Name         string   `json:"name"`
 	Filename     string   `json:"filename"`
-	Comment      string   `json:"comment"`
-	Date         string   `json:"date"`
-	CreatedBy    string   `json:"created_by"`
 	InfoHash     string   `json:"info_hash"`
 	Size         string   `json:"size"`
 	Announce     string   `json:"announce"`
@@ -50,16 +47,16 @@ func ReadJSONFromByteSlice(data []byte) TorrentData {
 // decodes the bencoded data and encode
 // it as json, then writes that json
 // out to a file. returns: an error if any.
-func WriteJSON(path string) error {
+func WriteJSON(path string) (*TorrentData, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer f.Close()
 
 	dec, err := bencode.Decode(f)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	meta := bencode.Unpack(dec)
@@ -75,9 +72,6 @@ func WriteJSON(path string) error {
 	td := TorrentData{
 		Name:         meta.Info.Name,
 		Filename:     strings.Join([]string{meta.Info.Name, ".json"}, ""),
-		Date:         meta.CreationDate.String(),
-		Comment:      meta.Comment,
-		CreatedBy:    meta.CreatedBy,
 		InfoHash:     hash,
 		Size:         size,
 		Announce:     meta.Announce,
@@ -87,15 +81,15 @@ func WriteJSON(path string) error {
 
 	rawBytes, err := json.MarshalIndent(td, "", "\t")
 	if err != nil {
-		return errors.New(utils.ErrorMarshaling)
+		return nil, errors.New(utils.ErrorMarshaling)
 	}
 
 	err = utils.AddToCache(td.Filename, rawBytes)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &td, nil
 }
 
 // IsEmpty checks if a TorrentData struct is empty

@@ -2,23 +2,17 @@ package bencode
 
 import (
 	"path/filepath"
-	"time"
 )
 
 type MetaInfo struct {
 	Announce     string
 	AnnounceList []string
-	CreationDate time.Time
-	Comment      string
-	CreatedBy    string
-	Encoding     string
 	Info         *InfoDictionary
 }
 
 type InfoDictionary struct {
 	PieceLength int64
 	Pieces      string
-	Private     int64
 	Name        string
 	Files       []*FilePiece
 }
@@ -38,47 +32,20 @@ func Unpack(data map[string]interface{}) *MetaInfo {
 		unpackedList = append(unpackedList, announceURL[0].(string))
 	}
 
-	// Optional fields (default value if any of the fields doesn't exist)
-
-	// Convert unix timestamp to datetime
-	var sec int64
-	var encoding, createdBy string
-	if _, ok := data["creation date"]; ok {
-		sec = data["creation date"].(int64)
-	}
-
-	tm := time.Unix(sec, 0)
-	if _, ok := data["encoding"]; ok {
-		encoding = data["encoding"].(string)
-	}
-
-	if _, ok := data["created by"]; ok {
-		createdBy = data["created by"].(string)
-	}
-
 	meta := &MetaInfo{
 		Announce:     announce,
 		AnnounceList: unpackedList,
-		CreatedBy:    createdBy,
-		CreationDate: tm,
-		Encoding:     encoding,
 	}
 
 	// unpack info dictionary
 	inf := data["info"].(map[string]interface{})
 	pieceLength := inf["piece length"].(int64)
 	pieces := inf["pieces"].(string)
-	// Optional field (default if doesnt exist)
-	var private int64
-	if _, ok := inf["private"]; ok {
-		private = inf["private"].(int64)
-	}
 	name := inf["name"].(string)
 
 	infoDict := &InfoDictionary{
 		PieceLength: pieceLength,
 		Pieces:      pieces,
-		Private:     private,
 		Name:        name,
 	}
 
