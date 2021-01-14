@@ -34,3 +34,5 @@ const (
 // CybeleCachePath is where all json files will reside
 // as well as the files that are in the download queue.
 var CybeleCachePath = strings.Join([]string{os.Getenv("HOME"), ".cache", "cybele"}, "/")
+// QueueFileName is used to keep track of files in queue
+var QueueFileName = "queues"
