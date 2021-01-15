@@ -30,7 +30,7 @@ func FetchDetailsFromTorrent(path string) {
 func connectToTracker(td TorrentData) {
 	tr := makeRequestObject(td)
 
-	resp, err := getResponse(tr)
+	resp, err := GetResponse(tr.url.String())
 
 	if err != nil {
 		utils.HandleError(utils.ErrorConnectingToTracker)
@@ -62,11 +62,11 @@ func makeRequestObject(td TorrentData) trackerRequest {
 
 }
 
-// Get response for the GET request to tracker URL with required params
-func getResponse(tr trackerRequest) (string, error) {
+// GetResponse for the GET request to tracker URL with required params
+func GetResponse(urlString string) (string, error) {
 
-	utils.LogMessage("Connecting:", tr.url.String(), "\n")
-	resp, err := http.Get(tr.url.String()) // Make GET Request to tracker for response
+	utils.LogMessage("Connecting:", urlString, "\n")
+	resp, err := http.Get(urlString) // Make GET Request to tracker for response
 	if err != nil {
 		return "", err
 	}

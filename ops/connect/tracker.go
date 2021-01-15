@@ -39,10 +39,11 @@ type AnnounceResponse struct {
 	TrackerID   string // Returned by the tracker for future announcements
 }
 
+// PeerObject contains structs having IP, Port, PeerID from 
 type PeerObject struct {
-	IP     string // nope, not changing this to IP
+	IP     string
 	Port   string
-	PeerId string // this neither
+	PeerId string
 }
 
 // Object to store tracker related information

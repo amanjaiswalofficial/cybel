@@ -21,7 +21,7 @@ type TorrentData struct {
 	Files        []string `json:"files"`
 }
 
-// Print properties from the torrent file
+// PrintInfo properties from the torrent file
 func (td TorrentData) PrintInfo() {
 	fmt.Printf("name: %+v\n", td.Name)
 	fmt.Printf("filename: %+v\n", td.Filename)
