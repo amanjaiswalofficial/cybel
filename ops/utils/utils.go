@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"cybele/ops/bencode"
 	"encoding/hex"
-	enc "github.com/jackpal/bencode-go"
 	"io/ioutil"
 	"log"
 	"net/url"
@@ -13,6 +12,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	enc "github.com/jackpal/bencode-go"
 )
 
 // ReadFileFromPath takes input as a path to read file from
@@ -51,8 +52,8 @@ func MakeInfoHash(basicHash string) string {
 	for i := 0; i < totalLen; i += 2 {
 		val, _ := strconv.ParseInt(string(basicHash[i:i+2]), 16, 16)
 		var res string
-		if val < 127 {
-			res = url.PathEscape(string(val))
+		if val <= 127 {
+			res = url.QueryEscape(string(val))
 			if string(res[0]) == "%" {
 				res = "%" + strings.ToLower(res[1:])
 			}
