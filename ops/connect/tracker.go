@@ -39,23 +39,23 @@ type AnnounceResponse struct {
 	TrackerID   string // Returned by the tracker for future announcements
 }
 
-// PeerObject contains structs having IP, Port, PeerID from 
+// PeerObject contains structs having IP, Port, PeerID from
 type PeerObject struct {
 	IP     string
 	Port   string
-	PeerId string
+	PeerID string
 }
 
 // Object to store tracker related information
 type trackerRequest struct {
 	url         *url.URL
 	response    *string
-	decodedResp struct {
+	DecodedResp struct {
 		Complete    int64
 		Incomplete  int64
 		Interval    int64
 		MinInterval int64
-		peers       []PeerObject
+		Peers       []PeerObject
 	}
 }
 
@@ -98,7 +98,7 @@ func (tr *trackerRequest) decodeResponse() (err error) {
 				Find the respective struct variable (using FieldByName)
 				Then by using SetInt(), set value for the same in tr.decodedResp
 			*/
-			rresp := reflect.ValueOf(&tr.decodedResp)
+			rresp := reflect.ValueOf(&tr.DecodedResp)
 			resStruct := rresp.Elem()
 			formattedKey := utils.FormatKey(key)
 			targetField := resStruct.FieldByName(strings.Title(formattedKey))
@@ -106,19 +106,18 @@ func (tr *trackerRequest) decodeResponse() (err error) {
 
 		case []interface{}:
 			fetchedValues := val.([]interface{})
+			var p PeerObject
 			for _, values := range fetchedValues {
 				assertedFetchedVal := values.(map[string]interface{})
 				for key, fetchedVal := range assertedFetchedVal {
 
 					/*
 						For each of the key in the peers response from tracker
-						i.e. Ip, Port and PeerId
+						i.e. Ip, Port and PeerID
 						Dynamically, find FieldByName
 						And update the same in tr.decodedResp.peers by appending
 						each peerObject
 					*/
-					var p PeerObject
-
 					rresp := reflect.ValueOf(&p)
 					resStruct := rresp.Elem()
 					formattedKey := utils.FormatKey(key)
@@ -126,8 +125,8 @@ func (tr *trackerRequest) decodeResponse() (err error) {
 						resStruct.FieldByName(strings.Title(formattedKey))
 					targetField.SetString(fetchedVal.(string))
 
-					tr.decodedResp.peers =
-						append(tr.decodedResp.peers, p)
+					tr.DecodedResp.Peers =
+						append(tr.DecodedResp.Peers, p)
 				}
 			}
 		default:

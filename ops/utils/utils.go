@@ -70,14 +70,18 @@ func MakeInfoHash(basicHash string) string {
 // Ex: Takes max interval and returns maxInterval
 // returns: formatted value for a string
 func FormatKey(key string) string {
+
 	keySplit := strings.Split(key, " ")
-	if len(keySplit) > 1 {
-		for i := 1; i < len(keySplit); i++ {
+	for i := 0; i < len(keySplit); i++ {
+		if len(keySplit[i]) == 2 {
+			keySplit[i] = strings.ToUpper(keySplit[i])
+		} else {
 			keySplit[i] = strings.Title(keySplit[i])
 		}
 
 	}
-	return strings.Join(keySplit, "")
+	formattedKey := strings.Join(keySplit, "")
+	return formattedKey
 }
 
 // ComputeInfoHash takes a torrent file path
