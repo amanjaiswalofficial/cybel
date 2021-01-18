@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"strings"
 	"cybele/ops/connect"
 	"cybele/ops/utils"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -32,7 +32,7 @@ func RunStartCmd(cmd *cobra.Command, args []string) {
 	trackerObject := connect.FetchDetailsFromTorrent(jsonPath)
 
 	for _, peerObj := range trackerObject.DecodedResp.Peers {
-		printString := fmt.Sprintf("will connect to %v:%v",peerObj.IP, peerObj.Port)
+		printString := fmt.Sprintf("will connect to %v:%v", peerObj.IP, peerObj.Port)
 		utils.LogMessage(printString)
 	}
 }

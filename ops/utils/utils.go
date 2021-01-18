@@ -122,7 +122,9 @@ func AddToCache(filename string, data []byte) error {
 			return err
 		}
 	}
-	fpath := filepath.Join(CybeleCachePath, filename)
+
+	fname := strings.Join([]string{filename, ".json"}, "")
+	fpath := filepath.Join(CybeleCachePath, fname)
 	f, err := os.Create(fpath)
 	if err != nil {
 		return err
