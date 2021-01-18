@@ -2,7 +2,6 @@ package connect
 
 import (
 	"cybele/ops/utils"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -12,7 +11,7 @@ import (
 // Then fetch the list of peers by making an HTTP request
 // To the tracker
 // returns: none
-func FetchDetailsFromTorrent(path string) {
+func FetchDetailsFromTorrent(path string) trackerRequest {
 	bs, err := utils.ReadFileFromPath(path)
 	if err != nil {
 		utils.HandleError(err.Error())
@@ -23,11 +22,12 @@ func FetchDetailsFromTorrent(path string) {
 		utils.HandleError(utils.ErrorReadingJSON)
 	}
 
-	connectToTracker(td)
+	decodedResponse := connectToTracker(td)
+	return decodedResponse
 }
 
 // Connect to tracker and retrieve list of peers
-func connectToTracker(td TorrentData) {
+func connectToTracker(td TorrentData) trackerRequest {
 	tr := makeRequestObject(td)
 
 	resp, err := GetResponse(tr.url.String())
@@ -46,7 +46,7 @@ func connectToTracker(td TorrentData) {
 	}
 
 	// TODO: Update here
-	fmt.Println(tr.decodedResp)
+	return tr
 }
 
 // Make request object of type trackerRequest from TorrentData

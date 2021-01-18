@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"cybele/ops/bencode"
 	"encoding/hex"
-	enc "github.com/jackpal/bencode-go"
 	"io/ioutil"
 	"log"
 	"net/url"
@@ -13,6 +12,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	enc "github.com/jackpal/bencode-go"
 )
 
 // ReadFileFromPath takes input as a path to read file from
@@ -51,8 +52,8 @@ func MakeInfoHash(basicHash string) string {
 	for i := 0; i < totalLen; i += 2 {
 		val, _ := strconv.ParseInt(string(basicHash[i:i+2]), 16, 16)
 		var res string
-		if val < 127 {
-			res = url.PathEscape(string(val))
+		if val <= 127 {
+			res = url.QueryEscape(string(val))
 			if string(res[0]) == "%" {
 				res = "%" + strings.ToLower(res[1:])
 			}
@@ -69,14 +70,18 @@ func MakeInfoHash(basicHash string) string {
 // Ex: Takes max interval and returns maxInterval
 // returns: formatted value for a string
 func FormatKey(key string) string {
+
 	keySplit := strings.Split(key, " ")
-	if len(keySplit) > 1 {
-		for i := 1; i < len(keySplit); i++ {
+	for i := 0; i < len(keySplit); i++ {
+		if len(keySplit[i]) == 2 {
+			keySplit[i] = strings.ToUpper(keySplit[i])
+		} else {
 			keySplit[i] = strings.Title(keySplit[i])
 		}
 
 	}
-	return strings.Join(keySplit, "")
+	formattedKey := strings.Join(keySplit, "")
+	return formattedKey
 }
 
 // ComputeInfoHash takes a torrent file path

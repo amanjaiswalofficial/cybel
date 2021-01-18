@@ -29,8 +29,8 @@ func RunListCmd(cmd *cobra.Command, args []string) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	for _, file := range fileNames {
-		fmt.Printf("%v\n", file)
+	for i := 0; i < len(fileNames)-1; i++ {
+		fmt.Printf("%v.%v\n", i+1, fileNames[i])
 	}
 
 }
@@ -43,6 +43,7 @@ func GetQueueFiles() ([]string, error) {
 	
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
+		utils.LogMessage(err.Error())
 		return nil, errors.New("Error reading queue")
 	}
 	fileList := strings.Split(string(data), "\n")
