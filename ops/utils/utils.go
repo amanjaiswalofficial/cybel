@@ -145,3 +145,7 @@ func AddToCache(filename string, data []byte) error {
 	queueFile.Write([]byte(filename + "\n"))
 	return nil
 }
+
+func MakePeerID() (string){
+	return string("-AA1111-123456789012")
+}

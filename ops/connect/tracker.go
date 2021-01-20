@@ -64,7 +64,7 @@ func (tr trackerRequest) addParamsToTrackerRequest(td TorrentData) {
 
 	infoHash := utils.MakeInfoHash(td.InfoHash)
 	params := url.Values{
-		"peer_id":    []string{string("-AA1111-123456789012")}, // to change
+		"peer_id":    []string{utils.MakePeerID()}, // to change
 		"port":       []string{strconv.Itoa(int(utils.ConnectionPort))},
 		"uploaded":   []string{"0"},     // by default, for first request
 		"downloaded": []string{"0"},     // by default, for first request

@@ -11,7 +11,7 @@ import (
 // Then fetch the list of peers by making an HTTP request
 // To the tracker
 // returns: none
-func FetchDetailsFromTorrent(path string) trackerRequest {
+func FetchDetailsFromTorrent(path string) (trackerRequest, TorrentData) {
 	bs, err := utils.ReadFileFromPath(path)
 	if err != nil {
 		utils.HandleError(err.Error())
@@ -23,7 +23,7 @@ func FetchDetailsFromTorrent(path string) trackerRequest {
 	}
 
 	decodedResponse := connectToTracker(td)
-	return decodedResponse
+	return decodedResponse, td
 }
 
 // Connect to tracker and retrieve list of peers
