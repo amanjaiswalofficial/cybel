@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strings"
+	"path/filepath"
 )
 
 // TorrentData : A struct for getting the json data
@@ -69,9 +69,12 @@ func WriteJSON(path string) (*TorrentData, error) {
 	hash := utils.ComputeInfoHash(path)
 	size := fmt.Sprintf("%d", meta.Info.PieceLength)
 
+	fname := filepath.Base(path)
+	ext := filepath.Ext(fname)
+
 	td := TorrentData{
 		Name:         meta.Info.Name,
-		Filename:     strings.Join([]string{meta.Info.Name, ".json"}, ""),
+		Filename:     fname,
 		InfoHash:     hash,
 		Size:         size,
 		Announce:     meta.Announce,
@@ -84,7 +87,7 @@ func WriteJSON(path string) (*TorrentData, error) {
 		return nil, errors.New(utils.ErrorMarshaling)
 	}
 
-	err = utils.AddToCache(td.Filename, rawBytes)
+	err = utils.AddToCache(fname[:len(fname)-len(ext)], rawBytes)
 	if err != nil {
 		return nil, err
 	}

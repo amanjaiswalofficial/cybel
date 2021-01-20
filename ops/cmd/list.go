@@ -40,7 +40,7 @@ func GetQueueFiles() ([]string, error) {
 
 	// Read queue from path
 	filePath := filepath.Join(utils.CybeleCachePath, utils.QueueFileName)
-	
+
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		utils.LogMessage(err.Error())
