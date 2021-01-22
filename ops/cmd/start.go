@@ -3,7 +3,6 @@ package cmd
 import (
 	"cybele/ops/connect"
 	"cybele/ops/utils"
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -29,10 +28,18 @@ func RunStartCmd(cmd *cobra.Command, args []string) {
 	fileName := strings.Join(args, " ")
 	fileName = fileName + ".json"
 	jsonPath := filepath.Join(utils.CybeleCachePath, fileName)
-	trackerObject := connect.FetchDetailsFromTorrent(jsonPath)
+	trackerObject, torrentData := connect.FetchDetailsFromTorrent(jsonPath)
 
-	for _, peerObj := range trackerObject.DecodedResp.Peers {
-		printString := fmt.Sprintf("will connect to %v:%v", peerObj.IP, peerObj.Port)
-		utils.LogMessage(printString)
-	}
+	peerID := utils.MakePeerID()
+
+	var hs connect.Handshake
+
+	hsStr := hs.GetString([]byte(torrentData.InfoHash), []byte(peerID))
+
+	connect.DoHandshake(hsStr, []byte(torrentData.InfoHash), trackerObject.DecodedResp.Peers)
+
+	// for _, peerObj := range trackerObject.DecodedResp.Peers {
+	// 	printString := fmt.Sprintf("will connect to %v:%v", peerObj.IP, peerObj.Port)
+
+	// }
 }

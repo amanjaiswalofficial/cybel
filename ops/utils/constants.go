@@ -22,8 +22,14 @@ const (
 	UnknownDecodeKeysEncountered = "Error encountered while decoding keys from tracker response"
 	// UDPTimeout is used when the number of retransmission surpass the threshold
 	UDPTimeout = "Transmission timed out"
-	// Protocol ID (magic constant used by the udp tracker)
+	// ErrorSendingMessage is used to display error while doing handshake
+	ErrorSendingMessage = "Error sending message to %v"
+	// ErrorReadingMessage is used to display error while reading handshake response
+	ErrorReadingMessage = "Error reading data from %v"
+	// Pid (magic constant used by the udp tracker)
 	Pid = uint64(0x41727101980)
+	// ZeroLengthError occurs while handling the handshake response
+	ZeroLengthError = "pstrlen cannot be 0"
 	// UDP Request Actions
 	Connect  = uint32(0)
 	Announce = uint32(1)
