@@ -2,6 +2,7 @@ package connect
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -66,9 +67,9 @@ func (tr trackerRequest) addParamsToTrackerRequest(td TorrentData) {
 	params := url.Values{
 		"peer_id":    []string{utils.MakePeerID()}, // to change
 		"port":       []string{strconv.Itoa(int(utils.ConnectionPort))},
-		"uploaded":   []string{"0"},     // by default, for first request
-		"downloaded": []string{"0"},     // by default, for first request
-		"left":       []string{td.Size}, // to confirm
+		"uploaded":   []string{"0"},                             // by default, for first request
+		"downloaded": []string{"0"},                             // by default, for first request
+		"left":       []string{fmt.Sprintf("%d", td.TotalSize)}, // to confirm
 	}
 
 	tr.url.RawQuery = params.Encode()
