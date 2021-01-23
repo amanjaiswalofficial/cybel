@@ -1,14 +1,15 @@
-package connect
+package handshake
 
 import (
 	"bytes"
-	"cybele/ops/utils"
 	"errors"
-	"fmt"
 	"io"
 	"net"
 	"strings"
 	"time"
+
+	"cybele/ops/utils"
+	"cybele/ops/connect"
 )
 
 type Handshake struct {
@@ -46,9 +47,7 @@ func (hs *Handshake) Serialize() []byte {
 
 // DoHandshake is used to connect with several peers for a specific file
 // depending on the infoHash (extracted from torrent file)
-func DoHandshake(hsStr []byte, infoHash []byte, peers []PeerObject) {
-
-	var successfulConnections int
+func DoHandshake(hsStr []byte, infoHash []byte, peers []connect.PeerObject) {
 
 	for i := 0; i < len(peers); i++ {
 
@@ -75,10 +74,7 @@ func DoHandshake(hsStr []byte, infoHash []byte, peers []PeerObject) {
 			continue
 		}
 
-		successfulConnections ++
-		message := fmt.Sprintf("Successful connections so far: %v", successfulConnections)
-		utils.LogMessage(message)
-		conn.Close()
+		KeepTalkingToPeer(conn)
 	}
 
 }

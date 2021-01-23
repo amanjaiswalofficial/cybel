@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"cybele/ops/connect"
+	"cybele/ops/handshake"
 	"cybele/ops/utils"
 	"path/filepath"
 	"strings"
@@ -32,14 +33,10 @@ func RunStartCmd(cmd *cobra.Command, args []string) {
 
 	peerID := utils.MakePeerID()
 
-	var hs connect.Handshake
+	var hs handshake.Handshake
 
 	hsStr := hs.GetString([]byte(torrentData.InfoHash), []byte(peerID))
 
-	connect.DoHandshake(hsStr, []byte(torrentData.InfoHash), trackerObject.DecodedResp.Peers)
+	handshake.DoHandshake(hsStr, []byte(torrentData.InfoHash), trackerObject.DecodedResp.Peers)
 
-	// for _, peerObj := range trackerObject.DecodedResp.Peers {
-	// 	printString := fmt.Sprintf("will connect to %v:%v", peerObj.IP, peerObj.Port)
-
-	// }
 }
