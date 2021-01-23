@@ -15,10 +15,17 @@ type TorrentData struct {
 	Name         string   `json:"name"`
 	Filename     string   `json:"filename"`
 	InfoHash     string   `json:"info_hash"`
-	Size         string   `json:"size"`
+	PieceSize    uint32   `json:"piecesize"`
+	TotalSize    uint64   `json:"totalsize"`
 	Announce     string   `json:"announce"`
 	AnnounceList []string `json:"announce_list"`
-	Files        []string `json:"files"`
+	Files        []File   `json:"files"`
+}
+
+// File struct for getting torrent metainfo files field
+type File struct {
+	Path   string `json:"path"`
+	Length uint64 `json:"length"`
 }
 
 // PrintInfo properties from the torrent file
@@ -26,12 +33,15 @@ func (td TorrentData) PrintInfo() {
 	fmt.Printf("name: %+v\n", td.Name)
 	fmt.Printf("filename: %+v\n", td.Filename)
 	fmt.Printf("infoHash: %+v\n", td.InfoHash)
-	fmt.Printf("size(in bytes): %+v\n", td.Size)
+	fmt.Printf("piece size (in bytes): %d\n", td.PieceSize)
+	fmt.Printf("total size (in bytes): %d\n", td.TotalSize)
 	fmt.Printf("announceURL: %+v\n", td.Announce)
 	fmt.Printf("files:\n")
-	for fileName := range td.Files {
-		fmt.Println(fileName)
+	for _, f := range td.Files {
+		fmt.Printf("Path: %s\n", f.Path)
+		fmt.Printf("Length: %d\n\n", f.Length)
 	}
+
 }
 
 // ReadJSONFromByteSlice accepts a byteslice
@@ -60,14 +70,16 @@ func WriteJSON(path string) (*TorrentData, error) {
 	}
 
 	meta := bencode.Unpack(dec)
-	files := make([]string, 0, len(meta.Info.Files))
+	files := make([]File, 0, len(meta.Info.Files))
+	totalSize := uint64(0)
 
 	for i := 0; i < len(meta.Info.Files); i++ {
-		files = append(files, meta.Info.Files[i].Path)
+		f := File{Path: meta.Info.Files[i].Path, Length: uint64(meta.Info.Files[i].Length)}
+		totalSize += f.Length
+		files = append(files, f)
 	}
 
 	hash := utils.ComputeInfoHash(path)
-	size := fmt.Sprintf("%d", meta.Info.PieceLength)
 
 	fname := filepath.Base(path)
 	ext := filepath.Ext(fname)
@@ -76,7 +88,8 @@ func WriteJSON(path string) (*TorrentData, error) {
 		Name:         meta.Info.Name,
 		Filename:     fname,
 		InfoHash:     hash,
-		Size:         size,
+		PieceSize:    uint32(meta.Info.PieceLength),
+		TotalSize:    totalSize,
 		Announce:     meta.Announce,
 		AnnounceList: meta.AnnounceList,
 		Files:        files,

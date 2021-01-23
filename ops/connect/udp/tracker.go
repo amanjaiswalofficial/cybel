@@ -177,6 +177,7 @@ func (tr *UDPTracker) Announce(r *connect.AnnounceRequest) (*connect.AnnounceRes
 	return resp, nil
 }
 
+// Make a request object for an udp tracker
 func MakeRequestObject(td *connect.TorrentData) *connect.AnnounceRequest {
 	// convert the info_hash back to binary
 	digest, err := hex.DecodeString(td.InfoHash)
@@ -187,17 +188,12 @@ func MakeRequestObject(td *connect.TorrentData) *connect.AnnounceRequest {
 	peerID := make([]byte, 20)
 	rand.Read(peerID)
 
-	size, err := strconv.ParseUint(td.Size, 10, 64)
-	if err != nil {
-		utils.HandleError(err.Error())
-	}
-
 	req := &connect.AnnounceRequest{
 		InfoHash:   digest[:],
 		PeerID:     peerID[:],
 		Uploaded:   uint64(0),
 		Downloaded: uint64(0),
-		Left:       size,
+		Left:       td.TotalSize,
 		Port:       uint16(utils.ConnectionPort),
 	}
 	return req

@@ -75,7 +75,7 @@ func DoHandshake(hsStr []byte, infoHash []byte, peers []PeerObject) {
 			continue
 		}
 
-		successfulConnections ++
+		successfulConnections++
 		message := fmt.Sprintf("Successful connections so far: %v", successfulConnections)
 		utils.LogMessage(message)
 		conn.Close()
