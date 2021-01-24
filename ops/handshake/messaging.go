@@ -12,11 +12,18 @@ func KeepTalkingToPeer(conn net.Conn) {
 
 	msg := makeMessage()
 
-	data := msg.serializeMessage(keepAlive)
+	data := msg.serializeMessage(unchoke)
 
 	_, err := conn.Write(data)
 	if err != nil {
 		fmt.Print(err)
+	}
+
+	data = msg.serializeMessage(interested)
+
+	_, errors := conn.Write(data)
+	if errors != nil {
+		fmt.Println(err)
 	}
 
 	buffer := make([]byte, 100)
@@ -25,7 +32,5 @@ func KeepTalkingToPeer(conn net.Conn) {
 		fmt.Print(errorVal)
 	}
 
-	fmt.Println(buffer)
 	fmt.Println(string(buffer))
-	fmt.Println()
 }
