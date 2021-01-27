@@ -146,6 +146,6 @@ func AddToCache(filename string, data []byte) error {
 	return nil
 }
 
-func MakePeerID() (string){
+func MakePeerID() string {
 	return string("-AA1111-123456789012")
 }
