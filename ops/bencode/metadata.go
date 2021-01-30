@@ -55,7 +55,7 @@ func Unpack(data map[string]interface{}) *MetaInfo {
 	// Multi-file torrent
 	if _, ok := inf["files"]; ok {
 		files := inf["files"].([]interface{})
-		fPieces := make([]*FilePiece, 0, len(files))
+		fPieces = make([]*FilePiece, len(files))
 		for i := 0; i < len(files); i++ {
 			mp := files[i].(map[string]interface{})
 			pLength := mp["length"].(int64)
@@ -67,7 +67,7 @@ func Unpack(data map[string]interface{}) *MetaInfo {
 				pPath = filepath.Join(pPath, f)
 			}
 
-			fPieces = append(fPieces, &FilePiece{Length: pLength, Path: pPath})
+			fPieces[i] = &FilePiece{Length: pLength, Path: pPath}
 		}
 
 	} else {
