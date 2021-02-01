@@ -6,12 +6,11 @@ import (
 	"net"
 )
 
-// KeepTalkingToPeer is a method to keep the messaging going to peers on the 
+// KeepTalkingToPeer is a method to keep the messaging going to peers on the
 // tcp once created connection with them
 func KeepTalkingToPeer(conn net.Conn) {
 
-	msg := makeMessage()
-
+	var msg Message
 	data := msg.serializeMessage(unchoke)
 
 	_, err := conn.Write(data)
@@ -26,11 +25,11 @@ func KeepTalkingToPeer(conn net.Conn) {
 		fmt.Println(err)
 	}
 
-	buffer := make([]byte, 100)
+	buffer := make([]byte, 4)
 	_, errorVal := io.ReadFull(conn, buffer)
 	if errorVal != nil {
 		fmt.Print(errorVal)
 	}
 
-	fmt.Println(string(buffer))
+	fmt.Printf("%v said %v\n", conn.RemoteAddr().String(),buffer)
 }
