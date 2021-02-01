@@ -50,24 +50,32 @@ func Unpack(data map[string]interface{}) *MetaInfo {
 	}
 
 	// unpack files list
-	files := inf["files"].([]interface{})
-	fPieces := make([]*FilePiece, 0, len(files))
-	for i := 0; i < len(files); i++ {
-		mp := files[i].(map[string]interface{})
-		pLength := mp["length"].(int64)
-		pathSlice := mp["path"].([]interface{})
+	var fPieces []*FilePiece
 
-		pPath := ""
-		for i := 0; i < len(pathSlice); i++ {
-			f := pathSlice[i].(string)
-			pPath = filepath.Join(pPath, f)
+	// Multi-file torrent
+	if _, ok := inf["files"]; ok {
+		files := inf["files"].([]interface{})
+		fPieces = make([]*FilePiece, len(files))
+		for i := 0; i < len(files); i++ {
+			mp := files[i].(map[string]interface{})
+			pLength := mp["length"].(int64)
+			pathSlice := mp["path"].([]interface{})
+
+			pPath := ""
+			for i := 0; i < len(pathSlice); i++ {
+				f := pathSlice[i].(string)
+				pPath = filepath.Join(pPath, f)
+			}
+
+			fPieces[i] = &FilePiece{Length: pLength, Path: pPath}
 		}
 
-		fPiece := &FilePiece{
-			Length: pLength,
-			Path:   pPath,
-		}
-		fPieces = append(fPieces, fPiece)
+	} else {
+		// Single-file torrent
+		fname := inf["name"].(string)
+		length := inf["length"].(int64)
+		fp := &FilePiece{Path: fname, Length: length}
+		fPieces = append(fPieces, fp)
 	}
 
 	infoDict.Files = fPieces
