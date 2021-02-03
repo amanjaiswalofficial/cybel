@@ -18,7 +18,7 @@ const (
 )
 
 type Message struct {
-	MsgID   uint8
+	MsgID   messageID
 	Payload []byte
 }
 
