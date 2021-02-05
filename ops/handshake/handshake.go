@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"cybele/ops/utils"
 	"cybele/ops/connect"
+	"cybele/ops/utils"
 )
 
 type Handshake struct {
@@ -74,6 +74,7 @@ func DoHandshake(hsStr []byte, infoHash []byte, peers []connect.PeerObject) {
 			continue
 		}
 
+		//fmt.Print("Connected to %v", conn)
 		KeepTalkingToPeer(conn)
 	}
 
