@@ -28,7 +28,7 @@ type Message struct {
 func (msg Message) serializeMessage(prefixLen messageID, pLoad payload) []byte {
 
 	msg.MsgID = prefixLen
-	
+
 	if pLoad != nil {
 		pLoad = make([]byte, 0)
 	}

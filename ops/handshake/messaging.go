@@ -16,11 +16,11 @@ func KeepTalkingToPeer(conn net.Conn) {
 	utils.ReadData(conn, remainderStreamLength)
 
 	var msg Message
-	
+
 	// sending unchoked and interested messages
 	data := msg.serializeMessage(unchoke, nil)
 	utils.WriteData(conn, data)
-	
+
 	data = msg.serializeMessage(interested, nil)
 	utils.WriteData(conn, data)
 
