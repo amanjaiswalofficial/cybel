@@ -5,8 +5,11 @@ import (
 	"crypto/sha1"
 	"cybele/ops/bencode"
 	"encoding/hex"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -148,4 +151,24 @@ func AddToCache(filename string, data []byte) error {
 
 func MakePeerID() string {
 	return string("-AA1111-123456789012")
+}
+
+// ReadData from the stream, upto the specified length as passed 
+// as byteSliceLen, and then read buffer of data read
+func ReadData(conn net.Conn, byteSliceLen int) ([]byte) {
+	buffer := make([]byte, byteSliceLen)
+	_, err := io.ReadFull(conn, buffer)
+	if err != nil {
+		fmt.Print(err)
+	}
+	return buffer
+}
+
+// WriteData will write data to an existing connection stream
+// taking input as a byteslice to be written on the stream
+func WriteData(conn net.Conn, byteSlice []byte) {
+	_, err := conn.Write(byteSlice)
+	if err != nil {
+		fmt.Print(err)
+	}	
 }

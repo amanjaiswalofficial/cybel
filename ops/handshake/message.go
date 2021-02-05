@@ -3,6 +3,7 @@ package handshake
 import "encoding/binary"
 
 type messageID int8
+type payload []byte
 
 const (
 	keepAlive    messageID = 0
@@ -19,17 +20,23 @@ const (
 
 type Message struct {
 	MsgID   messageID
-	Payload []byte
+	Payload payload
 }
 
 // convert the message into a byteslice to be sent to peers
 // based on the key provided
-func (msg Message) serializeMessage(prefixLen messageID) []byte {
+func (msg Message) serializeMessage(prefixLen messageID, pLoad payload) []byte {
 
-	data := make([]byte, prefixLen+4)
+	msg.MsgID = prefixLen
+	
+	if pLoad != nil {
+		pLoad = make([]byte, 0)
+	}
 
-	binary.BigEndian.PutUint32(data[0:4], uint32(prefixLen))
-	data[4] = byte(prefixLen)
+	data := make([]byte, len(pLoad)+1+4)
+
+	binary.BigEndian.PutUint32(data[0:4], uint32(len(pLoad)+1))
+	data[4] = byte(msg.MsgID)
 
 	return data
 }
