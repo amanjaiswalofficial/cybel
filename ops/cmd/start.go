@@ -14,10 +14,10 @@ func init() {
 	rootCmd.AddCommand(startCmd)
 }
 
-// listCmd lists the currrent queue of torrents added
+// startCmd starts a torrent download.
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: "List items in current queue of torrents to download",
+	Short: "Start a single or multiple torrents downloads",
 	Run:   RunStartCmd,
 	Args:  cobra.RangeArgs(1, 20),
 }
