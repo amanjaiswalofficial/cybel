@@ -153,9 +153,9 @@ func MakePeerID() string {
 	return string("-AA1111-123456789012")
 }
 
-// ReadData from the stream, upto the specified length as passed 
+// ReadData from the stream, upto the specified length as passed
 // as byteSliceLen, and then read buffer of data read
-func ReadData(conn net.Conn, byteSliceLen int) ([]byte) {
+func ReadData(conn net.Conn, byteSliceLen int) []byte {
 	buffer := make([]byte, byteSliceLen)
 	_, err := io.ReadFull(conn, buffer)
 	if err != nil {
@@ -170,5 +170,5 @@ func WriteData(conn net.Conn, byteSlice []byte) {
 	_, err := conn.Write(byteSlice)
 	if err != nil {
 		fmt.Print(err)
-	}	
+	}
 }

@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"cybele/ops/connect"
+	"cybele/ops/connect/udp"
 	"cybele/ops/handshake"
 	"cybele/ops/utils"
+	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -14,10 +16,10 @@ func init() {
 	rootCmd.AddCommand(startCmd)
 }
 
-// listCmd lists the currrent queue of torrents added
+// startCmd starts a torrent download.
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: "List items in current queue of torrents to download",
+	Short: "Start a single or multiple torrents downloads",
 	Run:   RunStartCmd,
 	Args:  cobra.RangeArgs(1, 20),
 }
@@ -29,14 +31,43 @@ func RunStartCmd(cmd *cobra.Command, args []string) {
 	fileName := strings.Join(args, " ")
 	fileName = fileName + ".json"
 	jsonPath := filepath.Join(utils.CybeleCachePath, fileName)
-	trackerObject, torrentData := connect.FetchDetailsFromTorrent(jsonPath)
+	bs, err := utils.ReadFileFromPath(jsonPath)
+	torrent := connect.ReadJSONFromByteSlice(bs)
+
+	peers, err := GetPeers(&torrent)
+	if err != nil {
+		utils.HandleError(err.Error())
+	}
 
 	peerID := utils.MakePeerID()
 
 	var hs handshake.Handshake
 
-	hsStr := hs.GetString([]byte(torrentData.InfoHash), []byte(peerID))
+	hsStr := hs.GetString([]byte(torrent.InfoHash), []byte(peerID))
 
-	handshake.DoHandshake(hsStr, []byte(torrentData.InfoHash), trackerObject.DecodedResp.Peers)
+	handshake.DoHandshake(hsStr, []byte(torrent.InfoHash), peers)
+}
 
+func GetPeers(torrent *connect.TorrentData) ([]connect.PeerObject, error) {
+	urlp, err := url.Parse(torrent.Announce)
+	if err != nil {
+		return nil, err
+	}
+
+	var peers []connect.PeerObject
+
+	if urlp.Scheme == "udp" {
+		tracker := udp.New(urlp.Host)
+		req := udp.MakeRequestObject(torrent)
+		resp, err := tracker.Announce(req)
+		if err != nil {
+			return nil, err
+		}
+		peers = resp.Peers
+	} else {
+		resp := connect.ConnectToTracker(*torrent)
+		peers = resp.DecodedResp.Peers
+	}
+
+	return peers, nil
 }

@@ -22,12 +22,12 @@ func FetchDetailsFromTorrent(path string) (trackerRequest, TorrentData) {
 		utils.HandleError(utils.ErrorReadingJSON)
 	}
 
-	decodedResponse := connectToTracker(td)
+	decodedResponse := ConnectToTracker(td)
 	return decodedResponse, td
 }
 
 // Connect to tracker and retrieve list of peers
-func connectToTracker(td TorrentData) trackerRequest {
+func ConnectToTracker(td TorrentData) trackerRequest {
 	tr := makeRequestObject(td)
 
 	resp, err := GetResponse(tr.url.String())
