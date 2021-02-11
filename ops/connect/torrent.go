@@ -20,6 +20,7 @@ type TorrentData struct {
 	Announce     string   `json:"announce"`
 	AnnounceList []string `json:"announce_list"`
 	Files        []File   `json:"files"`
+	PiecesHash   []byte   `json:"pieces"`
 }
 
 // File struct for getting torrent metainfo files field
@@ -93,6 +94,7 @@ func WriteJSON(path string) (*TorrentData, error) {
 		Announce:     meta.Announce,
 		AnnounceList: meta.AnnounceList,
 		Files:        files,
+		PiecesHash:   []byte(meta.Info.Pieces),
 	}
 
 	rawBytes, err := json.MarshalIndent(td, "", "\t")
