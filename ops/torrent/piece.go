@@ -11,6 +11,13 @@ type Piece struct {
 	Size  uint64
 }
 
+
+/* ParsePieces: parse the torrent pieces by assigning them an index, 
+    a hash and calculating its corresponding size.
+
+    NOTE: Each piece has the same size, except for the last piece. the code below
+        addresses that.
+*/
 func ParsePieces(tr connect.TorrentData) []Piece {
 	npieces := uint32(math.Ceil(float64(tr.TotalSize) / float64(tr.PieceSize)))
 	pieces := make([]Piece, 0, npieces)
